@@ -32,7 +32,36 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 	@Override
 	public void train(String sourceText)
 	{
-		// TODO: Implement this method
+		if(sourceText.length() < 1) {
+			return;
+		}
+		String[] tokens = sourceText.split(" ");
+		int len = tokens.length;
+		starter = tokens[0];
+		String prevWord = starter;
+		for(int i = 1 ; i < len; i++) {
+			String word = tokens[i];
+			ListNode node = listNodeInList(prevWord);
+			if(node != null) {
+				node.addNextWord(word);
+			} else {
+				ListNode newNode = new ListNode(prevWord);
+				newNode.addNextWord(word);
+				wordList.add(newNode);
+			}
+			prevWord = word;
+		}
+		wordList.get(wordList.size() - 1).addNextWord(starter);
+		
+	}
+	
+	private ListNode listNodeInList(String word) {
+		for (ListNode node: wordList) {
+			if(node.getWord().equals(word)) {
+				return  node;
+			}
+		}
+		return null;
 	}
 	
 	/** 
@@ -40,9 +69,23 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 	 */
 	@Override
 	public String generateText(int numWords) {
-	    // TODO: Implement this method
-		return null;
+		String text = "";
+		if(wordList.size() == 0 || numWords < 1) {
+			return text;
+		}
+		text += starter;
+		ListNode node = listNodeInList(starter);
+		String prevWord = node.getRandomNextWord(rnGenerator);
+	    for(int i = 1; i < numWords; i++) {
+	    	node = listNodeInList(prevWord);
+	    	String nextWord = node.getRandomNextWord(rnGenerator);
+	    	text += " " + node.getWord();
+	    	prevWord = nextWord;
+	    }
+		return text;
 	}
+	
+	
 	
 	
 	// Can be helpful for debugging
@@ -61,7 +104,9 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 	@Override
 	public void retrain(String sourceText)
 	{
-		// TODO: Implement this method.
+		wordList = new LinkedList<ListNode>();
+		starter = "";
+		train(sourceText);
 	}
 	
 	// TODO: Add any private helper methods you need here.
@@ -144,7 +189,12 @@ class ListNode
 		// TODO: Implement this method
 	    // The random number generator should be passed from 
 	    // the MarkovTextGeneratorLoL class
-	    return null;
+		int randomInt = 0;
+		if(nextWords.size() > 1) {
+			randomInt = generator.nextInt(nextWords.size() - 1);
+		}
+		return nextWords.get(randomInt);
+	   
 	}
 
 	public String toString()
@@ -158,5 +208,4 @@ class ListNode
 	}
 	
 }
-
 

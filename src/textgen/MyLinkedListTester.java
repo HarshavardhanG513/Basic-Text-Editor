@@ -109,12 +109,26 @@ public class MyLinkedListTester {
 	@Test
 	public void testRemove()
 	{
+		try {
+			list1.remove(-1);
+			fail("AddAtIndex: Add at low index");
+		} catch(Exception e) {
+			
+		}
+		
+		try {
+			list1.remove(11);
+			fail("AddAtIndex: Add at low index");
+		} catch(Exception e) {
+			
+		}
 		int a = list1.remove(0);
 		assertEquals("Remove: check a is correct ", 65, a);
 		assertEquals("Remove: check element 0 is correct ", (Integer)21, list1.get(0));
 		assertEquals("Remove: check size is correct ", 2, list1.size());
 		
 		// TODO: Add more tests here
+		assertEquals("remove: check link after remove", list1.head, list1.head.next.prev);
 	}
 	
 	/** Test adding an element into the end of the list, specifically
@@ -123,8 +137,17 @@ public class MyLinkedListTester {
 	@Test
 	public void testAddEnd()
 	{
-        // TODO: implement this test
+		try {
+			list1.add(null);
+			fail("addEnd : Can't add null");
+		} catch(Exception e) {
+			
+		}
 		
+		
+		emptyList.add(1);
+		assertEquals("Add: add one element is correct", (Integer)1, emptyList.get(0));
+		assertEquals("Add: add one element size is correct", (int) 1, emptyList.size());
 	}
 
 	
@@ -133,6 +156,12 @@ public class MyLinkedListTester {
 	public void testSize()
 	{
 		// TODO: implement this test
+		int size = list1.size();
+		assertEquals("List1 size is correct", 3, size);
+		list1.remove(0);
+		assertEquals("List1 size is 2 after remove 1 element", 2, list1.size());
+		list1.add(110);
+		assertEquals("List1 size is 3 afer add one element", 3, list1.size());
 	}
 
 	
@@ -144,7 +173,32 @@ public class MyLinkedListTester {
 	@Test
 	public void testAddAtIndex()
 	{
-        // TODO: implement this test
+       
+		try {
+			list1.add(-1, -111);
+			fail("AddAtIndex: Add at low index");
+		} catch(Exception e) {
+			
+		}
+		
+		try {
+			list1.add(11, 11);
+			fail("AddAtIndex: Add at low index");
+		} catch(Exception e) {
+			
+		}
+		
+		try {
+			list1.add(1, null);
+			fail("AddAtIndex : Can't add null");
+		} catch(Exception e) {
+			
+		}
+		
+		shortList.add(0, "test");
+		assertEquals("addAtIndex: check value", shortList.get(0), "test");
+		assertEquals("addAtIndex: check value behind new item", shortList.get(1), "A");
+		assertEquals("addAtIndex: check size after addition", shortList.size(), 3);
 		
 	}
 	
@@ -152,11 +206,31 @@ public class MyLinkedListTester {
 	@Test
 	public void testSet()
 	{
-	    // TODO: implement this test
+		try {
+			list1.set(-1, -111);
+			fail("AddAtIndex: Add at low index");
+		} catch(Exception e) {
+			
+		}
+		
+		try {
+			list1.set(11, 11);
+			fail("AddAtIndex: Add at low index");
+		} catch(Exception e) {
+			
+		}
+		list1.set(0, 110);
+		assertEquals("set: check new value is set ", (Integer) 110, list1.get(0) );
+		assertEquals("set: check size afeter value is set", 3, list1.size());
 	    
 	}
 	
 	
 	// TODO: Optionally add more test methods.
+	@Test
+	public void testHeadTail() {
+		assertEquals("Head Tail: check head",  list1.head, list1.head.next.prev);
+		assertEquals("Head Tail: check tail", list1.tail, list1.tail.prev.next);
+	}
 	
 }
