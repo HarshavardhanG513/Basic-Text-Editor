@@ -2,6 +2,7 @@ package spelling;
 
 import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -39,8 +40,24 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	 */
 	public boolean addWord(String word)
 	{
-	    //TODO: Implement this method.
+		TrieNode preNode = root;
+	    word = word.toLowerCase();
+	    char[] chars = word.toCharArray();
+	    for(int i = 0 ; i < chars.length; i++) {
+	    	char c = chars[i];
+	    	if(preNode.getChild(c) == null) {
+		    	preNode = preNode.insert(chars[i]);
+	    	} else {
+	    		preNode = preNode.getChild(c);
+	    	}
+	    	if(i == (chars.length - 1) && !preNode.endsWord()) {
+    			preNode.setEndsWord(true);
+    			this.size++;
+    			return true;
+	    	}
+	    }
 	    return false;
+	 
 	}
 	
 	/** 
@@ -49,8 +66,8 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	 */
 	public int size()
 	{
-	    //TODO: Implement this method
-	    return 0;
+	    
+	    return size;
 	}
 	
 	
@@ -59,8 +76,15 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	@Override
 	public boolean isWord(String s) 
 	{
-	    // TODO: Implement this method
-		return false;
+	    s = s.toLowerCase();
+	    char[] chars = s.toCharArray();
+	    TrieNode preNode = root;
+	    for(int i = 0 ; i < chars.length; i++) {
+	    	preNode = preNode.getChild(chars[i]);
+	    	if(preNode == null) return false;
+	    }
+	    return preNode.endsWord();
+		
 	}
 
 	/** 
@@ -101,7 +125,31 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
     	 //       Add all of its child nodes to the back of the queue
     	 // Return the list of completions
     	 
-         return null;
+    	 List<String> complections = new LinkedList<String>();
+    	 // check the stem
+    	 char[] chars = prefix.toCharArray(); 
+    	 TrieNode preNode = root;
+    	 for(char c: chars) {
+    		 preNode = preNode.getChild(c);
+    		 if(preNode == null) {
+    			 return complections;
+    		 }
+    	 }
+    	 LinkedList<TrieNode> queue = new LinkedList<TrieNode>();
+    	 queue.add(preNode);
+    	 // find complections
+    	 while(queue.size() > 0 && complections.size() < numCompletions) {
+    		 TrieNode node = queue.removeFirst();
+    		 if(node.endsWord()) {
+    			 complections.add(node.getText());
+    		 } 
+    		 Set<Character> charSet = node.getValidNextCharacters();
+    		 for(Character c : charSet) {
+    			 queue.add(node.getChild(c));
+    		 }
+    	 }
+    	 
+         return complections;
      }
 
  	// For debugging
